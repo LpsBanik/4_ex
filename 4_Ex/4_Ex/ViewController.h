@@ -10,6 +10,7 @@
 
 @interface ViewController : UIViewController
 
+//- (id) initWithActionPath: (NSString *)path;
 
 @end
 
