@@ -11,37 +11,48 @@
 @interface ViewController () <UITableViewDataSource, UITableViewDelegate>
 
 @property (weak, nonatomic) IBOutlet UITableView *tableView;
-@property (nonatomic, strong) NSArray <NSString*> *section;
+@property (nonatomic, readwrite) NSArray <NSString*> *section;
+@property (nonatomic, readwrite) NSArray <NSString*> *strings;
 
-@property (nonatomic, strong) NSArray <NSString*> *strings;
-@property (nonatomic, strong) NSString *path;
 @end
 
 @implementation ViewController
-//
-//- (id)initWithActionPath:(NSString *)path {
-//    self = [super init];
-//    if (self) {
-//        self.path = path;
-//    }
-//    return self;
-//}
+
+- (id)initWithActionTableView:(UITableView *)tableView {
+    self = [super init];
+    if (self) {
+        self.tableView = tableView;
+    }
+    return self;
+}
+
+- (void)setTableView:(UITableView *)tableView {
+    
+    _tableView = tableView;
+    [self.tableView reloadData];
+
+}
 
 - (void)viewDidLoad {
     [super viewDidLoad];
     self.section = @[@"Navigation actions", @"Log actions"];
     self.strings = @[@"Back", @"Push", @"Present modal", @"Log section number", @"Log row number", @"Log table frame", @"Log cell frame"];
     
-    UIEdgeInsets inset = UIEdgeInsetsMake(20, 0, 0, 0);
-    self.tableView.contentInset  = inset;
+//    UIEdgeInsets inset = UIEdgeInsetsMake(5, 0, 0, 0);
+//    self.tableView.contentInset  = inset;
     
     [self.tableView registerClass:[UITableViewCell class] forCellReuseIdentifier:@"Navigation actions"];
     [self.tableView registerClass:[UITableViewCell class] forCellReuseIdentifier:@"Log actions"];
     self.navigationItem.title = [self.path lastPathComponent];
+    
+    if(!self.tableView) {
+        self.tableView = _tableView;
+    }
+    
 }
 - (void)viewDidAppear:(BOOL)animated {
     [super viewDidAppear:animated];
-    
+
     NSLog(@"view contoller on stack = %ld", [self.navigationController.viewControllers count]);
     NSLog(@"index on stack = %ld", [self.navigationController.viewControllers indexOfObject:self]);
 
@@ -125,7 +136,6 @@
     }
     cell.selectionStyle = UITableViewCellSelectionStyleGray;
     
-    
     return cell;
 }
 
@@ -133,10 +143,27 @@
     [tableView deselectRowAtIndexPath:indexPath animated:YES];
     NSLog(@"Section Selected = %ld, Row Selected = %ld",indexPath.section, indexPath.row);
     
+    if ((indexPath.section == 0) && (indexPath.row == 0) && (self.navigationController.viewControllers.count >= 1)) {
     
+        [self.navigationController popViewControllerAnimated:YES];
+    }
     
+    if ((indexPath.section == 0) && (indexPath.row == 1)) {
+        
+        ViewController *vc = [self.storyboard instantiateViewControllerWithIdentifier:@"Push"];
+        
+        [self.navigationController pushViewController:vc animated:YES];
+    }
     
-    
+    if ((indexPath.section == 0) && (indexPath.row == 2)) {
+        
+        ViewController *vc = [self.storyboard instantiateViewControllerWithIdentifier:@"Modal"];
+        
+        [self.navigationController presentViewController:vc animated:YES completion:^{
+            [vc modalPresentationStyle];
+        }];
+        [self.presentedViewController dismissViewControllerAnimated:YES completion:nil];
+    }
     
     if (indexPath.section == 1) {
         switch (indexPath.row) {

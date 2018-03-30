@@ -9,8 +9,12 @@
 #import <UIKit/UIKit.h>
 
 @interface ViewController : UIViewController
+@property (nonatomic, strong) NSString *path;
+@property (nonatomic, readonly) NSArray <NSString*> *section;
 
-//- (id) initWithActionPath: (NSString *)path;
+@property (nonatomic, readonly) NSArray <NSString*> *strings;
+
+- (id) initWithActionTableView: (UITableView *)tableView;
 
 @end
 
